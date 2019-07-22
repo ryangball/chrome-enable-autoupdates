@@ -24,8 +24,8 @@ fi
 
 # Determine KeystoneRegistration.framework path
 if [[ $chromeMajorVersion -ge 75 ]] ; then
-    frameworkPath="$chromePath/Contents/Frameworks/Google Chrome Framework.framework/Versions/$chromeVersion/Frameworks/KeystoneRegistration.framework"
-    resourcesPath="$chromePath/Contents/Frameworks/Google Chrome Framework.framework/Versions/$chromeVersion/Resources"
+    frameworkPath="$chromePath/Contents/Frameworks/Google Chrome Framework.framework/Versions/Current/Frameworks/KeystoneRegistration.framework"
+    resourcesPath="$chromePath/Contents/Frameworks/Google Chrome Framework.framework/Versions/Current/Resources"
 else
     frameworkPath="$chromePath/Contents/Versions/$chromeVersion/Google Chrome Framework.framework/Versions/A/Frameworks/KeystoneRegistration.framework"
     resourcesPath="$chromePath/Contents/Versions/$chromeVersion/Google Chrome Framework.framework/Versions/A/Resources"
@@ -35,13 +35,6 @@ fi
 if [[ ! -e "$frameworkPath" ]]; then
     echo "Error: KeystoneRegistration.framework not found"
     exit 1
-fi
-
-# Run preflight script to ensure suitable environment for Keystone installation
-if ! "$resourcesPath/keystone_promote_preflight.sh" > /dev/null ; then
-    exitCode="$?"
-    echo "Error: keystone_promote_preflight.sh failed with code $exitCode"
-    exit "$exitCode"
 fi
 
 # Install the current Keystone
@@ -72,11 +65,6 @@ then
     exit "$exitCode"
 else
     echo "Registered Chrome with Keystone"
-fi
-
-# Run postflight script to change owner, group, and permissions on the Chrome application
-if ! "$resourcesPath/keystone_promote_postflight.sh" "$chromePath" > /dev/null ; then
-    echo "Error: keystone_promote_postflight.sh failed with code $exitCode"
 fi
 
 exit 0

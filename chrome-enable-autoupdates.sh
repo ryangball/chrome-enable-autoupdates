@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://github.com/ryangball/chrome-enable-autoupdates/blob/master/chrome-enable-autoupdates.sh
+
 # This script enables system wide automatic updates for Google Chrome.
 
 # Written by Ryan Ball after somehow becoming responsible for it
@@ -25,10 +27,8 @@ fi
 # Determine KeystoneRegistration.framework path
 if [[ $chromeMajorVersion -ge 75 ]] ; then
     frameworkPath="$chromePath/Contents/Frameworks/Google Chrome Framework.framework/Versions/Current/Frameworks/KeystoneRegistration.framework"
-    resourcesPath="$chromePath/Contents/Frameworks/Google Chrome Framework.framework/Versions/Current/Resources"
 else
     frameworkPath="$chromePath/Contents/Versions/$chromeVersion/Google Chrome Framework.framework/Versions/A/Frameworks/KeystoneRegistration.framework"
-    resourcesPath="$chromePath/Contents/Versions/$chromeVersion/Google Chrome Framework.framework/Versions/A/Resources"
 fi
 
 # Check if framework exists
@@ -37,8 +37,15 @@ if [[ ! -e "$frameworkPath" ]]; then
     exit 1
 fi
 
+# Determine ksinstall path
+if [[ $chromeMajorVersion -ge 80 ]] ; then
+  ksinstallPath="$frameworkPath/Helpers/ksinstall"
+else
+  ksinstallPath="$frameworkPath/Resources/ksinstall"
+fi
+
 # Install the current Keystone
-if ! "$frameworkPath/Resources/ksinstall" --install "$frameworkPath/Resources/Keystone.tbz" --force 2>/dev/null ; then
+if ! "$ksinstallPath" --install "$frameworkPath/Resources/Keystone.tbz" --force 2>/dev/null ; then
     exitCode="$?"
     echo "Error: Keystone install failed with code $exitCode"
     exit "$exitCode"
